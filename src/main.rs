@@ -1,5 +1,6 @@
-mod bitwig;
-use revm::primitives::B160;
+mod environment;
+mod attackers;
+mod defenders;
 
 fn main() {
     println!("Hello, world!");

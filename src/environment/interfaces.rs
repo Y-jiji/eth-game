@@ -1,3 +1,6 @@
+use revm::primitives::B160;
+use super::bitwig;
+
 pub struct AttackerInfo {
     // target contracts
     targets: Vec<(B160, Vec<u8>, Vec<(u64, u64)>)>,
@@ -13,7 +16,8 @@ pub struct AttackerAction {
 }
 
 pub trait Attacker {
-    fn act(&mut self, x: AttackerInfo) -> AttackerAction;   
+    fn act(&mut self, x: AttackerInfo) -> AttackerAction;
+    fn improve(&mut self);
 }
 
 pub struct DefenderInfo {
@@ -23,12 +27,12 @@ pub struct DefenderInfo {
 
 pub struct DefenderAction {
     // defending conditions for each function in each contract
-    hook_inp: Vec<(B160, Vec<(u64, Vec<u8>)>)>,
-    hook_out: Vec<(B160, Vec<(u64, Vec<u8>)>)>,
+    hook: Vec<(B160, Vec<(u64, Vec<bitwig::Instruction>)>)>,
 }
 
 pub trait Defender {
     fn act(&mut self, x: DefenderInfo) -> DefenderAction;
+    fn improve(&mut self);
 }
 
 pub trait Runner {
