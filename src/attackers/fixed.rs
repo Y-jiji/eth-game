@@ -18,7 +18,7 @@ impl Attacker for AttackerFixed {
         (0, self.group.clone())
     }
     fn check(&self, _state: &mut Self::State) -> bool { true }
-    fn make_call(&self, state: &mut Self::State) -> Option<(B160, U256, Bytes)> {
+    fn make_mal_call(&self, state: &mut Self::State) -> Option<(B160, U256, Bytes)> {
         let (count, group) = state; *count += 1;
         if *count > group.len() { None }
         else {

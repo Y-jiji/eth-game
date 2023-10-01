@@ -78,7 +78,7 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
         else if self.accounts.1 == inputs.contract {
             // iterate over attacker calls, let attacker process input
             while self.limit > 0 {
-                let Some((addr, value, input)) = self.attacker.make_call(&mut self.attstate)
+                let Some((addr, value, input)) = self.attacker.make_mal_call(&mut self.attstate)
                     else { break };
                 self.limit -= 1;
                 // boilerplate call

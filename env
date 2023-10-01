@@ -1,0 +1,2 @@
+export LIBTORCH=$(readlink -f .local/libtorch)
+export LD_LIBRARY_PATH=$(readlink -f .local/libtorch/lib):$LD_LIBRARY_PATH
