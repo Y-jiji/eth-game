@@ -25,7 +25,7 @@ impl Attacker for AttackerFixed {
             group[*count - 1].pop()
         }
     }
-    fn take_return(&self, state: &mut Self::State, ret: InstructionResult, _gas: Gas, _out: Bytes) {
+    fn take_return(&self, state: &mut Self::State, _ret: InstructionResult, _gas: Gas, _out: Bytes) {
         let (count, _group) = state;
         *count -= 1;
     }

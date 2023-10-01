@@ -93,7 +93,7 @@ impl<A: Attacker, D: Defender, const TRACE: bool> Environment<A, D, TRACE> {
             evm.env.tx.transact_to = TransactTo::Create(CreateScheme::Create);
             evm.env.tx.data = init_code;
             evm.env.tx.value = U256::from(0);
-            evm.env.tx.gas_limit = 10_000_000;
+            evm.env.tx.gas_limit = u64::MAX;
             let result = evm.transact_commit().unwrap();
             let (code, address) = match result {
                 ExecutionResult::Success { output: Output::Create(code, Some(address)), .. } => (code, address),
@@ -106,7 +106,7 @@ impl<A: Attacker, D: Defender, const TRACE: bool> Environment<A, D, TRACE> {
             evm.env.tx.transact_to = TransactTo::Call(address);
             evm.env.tx.data = Bytes::default();
             evm.env.tx.value = U256::from(u64::MAX / len);
-            evm.env.tx.gas_limit = 10_000_000;
+            evm.env.tx.gas_limit = u64::MAX;
             let result = evm.transact_commit().unwrap();
             match result {
                 ExecutionResult::Success { .. } => (),

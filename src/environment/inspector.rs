@@ -48,9 +48,17 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
         let code_nm = revm::interpreter::opcode::OPCODE_JUMPMAP[interp.current_opcode() as usize].unwrap_or("UNKNOWN");
         let mut string = String::new();
         writeln!(&mut string, "{code_nr:<5}{code_nm}").unwrap();
+        writeln!(&mut string, "        @STACK").unwrap();
         for d in interp.stack().data() {
             let d = d.as_limbs();
-            writeln!(&mut string, "        {:016x}:{:016x}:{:016x}:{:016x}  [STACK]", d[0], d[1], d[2], d[3]).unwrap();
+            writeln!(&mut string, "        {:016x}:{:016x}:{:016x}:{:016x}", d[0], d[1], d[2], d[3]).unwrap();
+        }
+        writeln!(&mut string, "        @MEMORY").unwrap();
+        for (i, d) in interp.memory().data().into_iter().enumerate() {
+            if i % 32 == 0 { write!(&mut string, "        ").unwrap(); }
+            write!(&mut string, "{d:02x}").unwrap();
+            if i % 32 == 31 { write!(&mut string, "\n").unwrap(); }
+            else if i % 8 == 7  { write!(&mut string, ":").unwrap(); }
         }
         print!("{string}");
         InstructionResult::Continue
@@ -64,7 +72,7 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
             // check before function calls
             let (state, ok) = self.defender.check(self.defstate.last().unwrap_or_else(|| panic!()), inputs);
             self.defstate.push(state);
-            let ok = if ok { InstructionResult::Continue } else { InstructionResult::Revert };
+            let ok = if ok { InstructionResult::Continue } else { InstructionResult::Stop };
             (ok, Gas::new(0), Bytes::default())
         }
         else if self.accounts.1 == inputs.contract {
@@ -88,7 +96,7 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
             }
             // decide whether a call should fail
             let ok = self.attacker.check(&mut self.attstate);
-            let ok = if ok { InstructionResult::Continue } else {InstructionResult::Revert };
+            let ok = if ok { InstructionResult::Continue } else {InstructionResult::Stop };
             (ok, Gas::new(0), Bytes::default())
         }
         else {
