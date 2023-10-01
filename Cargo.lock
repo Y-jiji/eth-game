@@ -826,8 +826,9 @@ dependencies = [
  "bitvec",
  "ethers",
  "hex",
- "lazy_static",
  "logger",
+ "once_cell",
+ "rand 0.8.5",
  "revm",
 ]
 

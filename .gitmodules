@@ -1,3 +1,9 @@
 [submodule "revm"]
 	path = revm
 	url = git@github.com:Y-jiji/revm
+[submodule "smartbugs-wild"]
+	path = smartbugs-wild
+	url = https://github.com/smartbugs/smartbugs-wild/
+[submodule "smartbugs-curated"]
+	path = smartbugs-curated
+	url = https://github.com/smartbugs/smartbugs-curated
