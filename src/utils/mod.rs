@@ -25,15 +25,3 @@ pub fn compile_solidity(solc: &str, source: &str) -> (Bytes, Abi) {
         .wait().unwrap();
     (bin.into(), abi)
 }
-
-#[cfg(test)]
-mod test {
-    use super::compile_solidity;
-
-    #[test]
-    fn test_compile() {
-        let (bytes, abi) = compile_solidity("/home/tj-yang/.nvm/versions/node/v20.8.0/bin/solcjs", "shit.sol");
-        println!("{bytes:?}");
-        println!("{abi:?}");
-    }
-}
