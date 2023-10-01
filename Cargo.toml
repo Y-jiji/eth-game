@@ -8,4 +8,7 @@ edition = "2021"
 [dependencies]
 bitvec = "1.0.1"
 ethers = "2.0.10"
+hex = "0.4.3"
+lazy_static = "1.4.0"
+logger = "0.4.0"
 revm = { path='./revm/crates/revm', features = ["ethersdb"] }
