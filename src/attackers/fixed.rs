@@ -14,8 +14,8 @@ impl AttackerFixed {
 
 impl Attacker for AttackerFixed {
     type State = (usize, Vec<Vec<(B160, U256, Bytes)>>);
-    fn init(&mut self, _contracts: &[(B160, Bytes)]) -> Self::State {
-        (0, self.group.clone())
+    fn init(&mut self, _contracts: &[(B160, Bytes)]) -> (bool, Self::State) {
+        (true, (0, self.group.clone()))
     }
     fn check(&self, _state: &mut Self::State) -> bool { true }
     fn make_mal_call(&self, state: &mut Self::State) -> Option<(B160, U256, Bytes)> {

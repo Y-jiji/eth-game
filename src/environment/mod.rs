@@ -133,14 +133,14 @@ impl<A: Attacker, D: Defender, const TRACE: bool> Environment<A, D, TRACE> {
             }
         );
         // initialize attacker and defender with contracts
-        let attstate = self.attacker.1.as_mut().unwrap().init(&self.contracts);
+        let (is_malicious, attstate) = self.attacker.1.as_mut().unwrap().init(&self.contracts);
         let defstate = vec![self.defender.as_mut().unwrap().init(&self.contracts)];
         let inspector = inspector::GameInspector::<D, A, TRACE> {
             limit: self.limit,
             accounts: (HashSet::from_iter(self.contracts.iter().map(|x| x.0)), self.attacker.0.unwrap()),
             attacker: self.attacker.1.unwrap(), 
             defender: self.defender.unwrap(), 
-            attstate, defstate
+            attstate, defstate, is_malicious,
         };
         // call attacker to start the game, addr is attacker address
         let mut evm = revm::EVM::new();
@@ -149,7 +149,9 @@ impl<A: Attacker, D: Defender, const TRACE: bool> Environment<A, D, TRACE> {
         evm.env.tx.transact_to = TransactTo::Call(self.attacker.0.unwrap());
         evm.env.tx.data = Bytes::default();
         evm.env.tx.value = U256::from(0);
-        evm.inspect_commit(inspector).unwrap();
+        let execution_result = evm.inspect_commit(inspector).unwrap();
+        // see if there is a halt / revert (should never happen)
+        assert!(matches!(execution_result, ExecutionResult::Success{ .. }), "{execution_result:?}");
         // give the final utility
         self.db.load_account(self.attacker.0.unwrap()).unwrap().info.balance.clone()
     }

@@ -14,6 +14,7 @@ pub struct GameInspector<DP: Defender, AP: Attacker, const TRACE: bool = false> 
     // pure strategy of an attacker
     pub attacker: AP,
     pub attstate: AP::State,
+    pub is_malicious: bool,
 }
 
 impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool> 
@@ -34,7 +35,6 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
         InstructionResult::Continue
     }
     fn step(&mut self, interp: &mut Interpreter, _data: &mut EVMData<'_,DB> ) -> InstructionResult {
-        if !TRACE { return InstructionResult::Continue }
         if interp.contract.address == self.accounts.1 {
             InstructionResult::Stop
         } else {
@@ -72,7 +72,7 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
             // check before function calls
             let (state, ok) = self.defender.check(self.defstate.last().unwrap_or_else(|| panic!()), inputs);
             self.defstate.push(state);
-            let ok = if ok { InstructionResult::Continue } else { InstructionResult::Stop };
+            let ok = if ok { InstructionResult::Continue } else { InstructionResult::Revert };
             (ok, Gas::new(0), Bytes::default())
         }
         else if self.accounts.1 == inputs.contract {
@@ -96,7 +96,7 @@ impl<DB: Database, DP: Defender, AP: Attacker, const TRACE: bool>
             }
             // decide whether a call should fail
             let ok = self.attacker.check(&mut self.attstate);
-            let ok = if ok { InstructionResult::Continue } else {InstructionResult::Stop };
+            let ok = if ok { InstructionResult::Continue } else {InstructionResult::Revert };
             (ok, Gas::new(0), Bytes::default())
         }
         else {

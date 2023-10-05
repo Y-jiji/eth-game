@@ -12,7 +12,7 @@ pub trait Defender {
 pub trait Attacker {
     type State;
     // initialize a state
-    fn init(&mut self, contracts: &[(B160, Bytes)]) -> Self::State;
+    fn init(&mut self, contracts: &[(B160, Bytes)]) -> (bool, Self::State);
     // generate a sequence of function calls
     fn make_mal_call(&self, state: &mut Self::State) -> Option<(B160, U256, Bytes)>;
     // process a call return

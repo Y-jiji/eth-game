@@ -1,7 +1,6 @@
 use revm::primitives::*;
 use revm::interpreter::*;
 use crate::environment::interfaces::Attacker;
-use bitvec::view::AsBits;
 
 pub struct AttackerNeural {
     script_make_call: Vec<u32>,
@@ -17,7 +16,7 @@ pub struct AttackerNeural {
 
 impl Attacker for AttackerNeural {
     type State = [u32; 1024];
-    fn init(&mut self, contracts: &[(B160, Bytes)]) -> Self::State {
+    fn init(&mut self, contracts: &[(B160, Bytes)]) -> (bool, Self::State) {
         todo!()
     }
     fn check(&self, state: &mut Self::State) -> bool {

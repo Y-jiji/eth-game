@@ -1,8 +1,8 @@
-use crate::{environment, attackers::{self, AttackerFixed}, defenders::{self, DefenderPermissive}};
+use crate::environment::{self, interfaces::Defender};
+use crate::{attackers, defenders};
 use ethers::abi::Token;
 
-#[test]
-fn test_environment() {
+fn test_environment_with<const TRACE: bool>(defender: impl Defender) {
     use ethers::abi::parse_abi;
     use revm::primitives::*;
     let abi = parse_abi(&[
@@ -11,7 +11,7 @@ fn test_environment() {
         "function withdraw(uint _amount) public",
     ]).unwrap();
     let bin = hex::decode(include_str!("../../test-resources/Reentrance.bin")).unwrap().into();
-    let mut env = environment::Environment::<AttackerFixed, DefenderPermissive, true>::new(10);
+    let mut env = environment::Environment::<_, _, TRACE>::new(10);
     env.load_contracts(vec![bin]);
     let target = env.get_contracts()[0].0;
     let attacker_account = env.create_attacker_account();
@@ -25,10 +25,15 @@ fn test_environment() {
         vec![(target, U256::from(0), withdraw.clone())],
         vec![(target, U256::from(0), withdraw.clone())],
     ]);
-    let defender = defenders::DefenderPermissive;
     env.load_attacker(attacker);
     env.load_defender(defender);
     let y = env.compute();
-    println!("===");
+    println!("\n===");
     println!("attacker balance:\n\t{x} -> {y}");
+}
+
+#[test]
+fn test_environment() {
+    test_environment_with::<false>(defenders::DefenderPermissive);
+    test_environment_with::<false>(defenders::DefenderDenial);
 }
