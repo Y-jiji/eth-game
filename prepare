@@ -1,3 +1,4 @@
+mkdir ./.local
 cd ./.local
 if command -v axel &> /dev/null
 then
